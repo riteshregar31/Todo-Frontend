@@ -1,20 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { getAllTodos } from '../services/TodoService';
 
 const ListTodoComponent = () => {
-  const dummyData = [
-    { "id": 1, "title": "learn java", "description": "learn core java", "completed": false },
-    { "id": 2, "title": "learn javascript", "description": "study ES6+ features and async programming", "completed": false },
-    { "id": 3, "title": "read a book", "description": "finish 50 pages of a programming book", "completed": true },
-    { "id": 4, "title": "workout", "description": "30 minutes of cardio and strength training", "completed": false },
-    { "id": 5, "title": "build project", "description": "create a todo app using React", "completed": false },
-    { "id": 6, "title": "write blog", "description": "publish an article on Medium about JavaScript", "completed": true },
-    { "id": 7, "title": "learn sql", "description": "practice queries on joins and subqueries", "completed": false },
-    { "id": 8, "title": "grocery shopping", "description": "buy milk, fruits, and vegetables", "completed": true },
-    { "id": 9, "title": "watch tutorial", "description": "watch a YouTube tutorial on Node.js", "completed": false },
-    { "id": 10, "title": "daily journal", "description": "write down today’s reflections", "completed": true }
-  ];
+ 
 
-  const [todos, setTodos] = useState(dummyData);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(()=>{
+listTodos()
+  },[])
+
+function listTodos(){
+  getAllTodos().then((res)=>{
+    setTodos(res.data);
+  }).catch(error=>{
+     console.error(error);
+  })
+}
 
   return (
     <div className="container mt-4">
