@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { deleteTodo, getAllTodos } from "../services/TodoService";
+import { completeTodo, deleteTodo, getAllTodos, inCompleteTodo } from "../services/TodoService";
 import { useNavigate } from "react-router-dom";
 
 const ListTodoComponent = () => {
@@ -16,18 +16,25 @@ const ListTodoComponent = () => {
       .catch((error) => console.error(error));
   };
 
-  const addNewTodo = () => {
-    navigate("/add-todo");
+  const addNewTodo = () => navigate("/add-todo");
+  const updateTodo = (id) => navigate(`/update-todo/${id}`);
+
+  const removeTodo = (id) => {
+    deleteTodo(id)
+      .then(() => listTodos())
+      .catch((error) => console.error(error));
   };
 
-  const updateTodo = (id) => {
-    navigate(`/update-todo/${id}`);
+  const markCompleteTodo = (id) => {
+    completeTodo(id)
+      .then(() => listTodos())
+      .catch((error) => console.error(error));
   };
-const removeTodo=(id)=>{
-  deleteTodo(id).then((res)=>{
-    listTodos()
-  }).catch(error=>console.error(error))
-}
+const markIncompleteTodo = (id) => {
+    inCompleteTodo(id)
+      .then(() => listTodos())
+      .catch((error) => console.error(error));
+  };
   return (
     <div className="container mt-5">
       <div className="card shadow-lg border-0 rounded-3">
@@ -45,7 +52,7 @@ const removeTodo=(id)=>{
                 <th>Todo Title</th>
                 <th>Description</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th colSpan="3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -64,26 +71,44 @@ const removeTodo=(id)=>{
                     </td>
                     <td>
                       <button
-                        className="btn btn-sm btn-info"
+                        className="btn btn-sm btn-info rounded-pill d-flex align-items-center"
                         onClick={() => updateTodo(todo.id)}
                       >
                         <i className="bi bi-pencil-square me-1"></i> Update
                       </button>
                     </td>
-                    <td className="text-center">
+                    <td>
                       <button
                         className="btn btn-sm btn-danger rounded-pill d-flex align-items-center"
                         onClick={() => removeTodo(todo.id)}
-                        title="Delete Todo"
                       >
                         <i className="bi bi-trash-fill me-1"></i> Delete
                       </button>
+                    </td>
+                    <td>
+                     {todo.completed ? (
+    <button
+      className="btn btn-sm btn-warning rounded-pill d-flex align-items-center"
+      onClick={() => markIncompleteTodo(todo.id)}
+      title="Mark as Incomplete"
+    >
+      <i className="bi bi-x-lg me-1"></i> Incomplete
+    </button>
+  ) : (
+    <button
+      className="btn btn-sm btn-success rounded-pill d-flex align-items-center"
+      onClick={() => markCompleteTodo(todo.id)}
+      title="Mark as Complete"
+    >
+      <i className="bi bi-check-lg me-1"></i> Complete
+    </button>
+  )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center text-muted">
+                  <td colSpan="7" className="text-center text-muted">
                     No Todos Found
                   </td>
                 </tr>
