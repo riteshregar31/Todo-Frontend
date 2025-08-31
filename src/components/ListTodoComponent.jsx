@@ -10,15 +10,19 @@ const ListTodoComponent = () => {
     listTodos();
   }, []);
 
-  function listTodos() {
+  const listTodos = () => {
     getAllTodos()
       .then((res) => setTodos(res.data))
       .catch((error) => console.error(error));
-  }
+  };
 
-  function addNewTodo() {
+  const addNewTodo = () => {
     navigate("/add-todo");
-  }
+  };
+
+  const updateTodo = (id) => {
+    navigate(`/update-todo/${id}`);
+  };
 
   return (
     <div className="container mt-5">
@@ -33,10 +37,11 @@ const ListTodoComponent = () => {
           <table className="table table-bordered table-hover table-striped align-middle text-center">
             <thead className="table-dark">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Todo Title</th>
-                <th scope="col">Description</th>
-                <th scope="col">Status</th>
+                <th>#</th>
+                <th>Todo Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -53,11 +58,19 @@ const ListTodoComponent = () => {
                         <span className="badge bg-danger">Pending</span>
                       )}
                     </td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-info"
+                        onClick={() => updateTodo(todo.id)}
+                      >
+                        <i className="bi bi-pencil-square me-1"></i> Update
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center text-muted">
+                  <td colSpan="5" className="text-center text-muted">
                     No Todos Found
                   </td>
                 </tr>
