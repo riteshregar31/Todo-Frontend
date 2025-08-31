@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllTodos } from "../services/TodoService";
+import { deleteTodo, getAllTodos } from "../services/TodoService";
 import { useNavigate } from "react-router-dom";
 
 const ListTodoComponent = () => {
@@ -23,7 +23,11 @@ const ListTodoComponent = () => {
   const updateTodo = (id) => {
     navigate(`/update-todo/${id}`);
   };
-
+const removeTodo=(id)=>{
+  deleteTodo(id).then((res)=>{
+    listTodos()
+  }).catch(error=>console.error(error))
+}
   return (
     <div className="container mt-5">
       <div className="card shadow-lg border-0 rounded-3">
@@ -64,6 +68,15 @@ const ListTodoComponent = () => {
                         onClick={() => updateTodo(todo.id)}
                       >
                         <i className="bi bi-pencil-square me-1"></i> Update
+                      </button>
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-danger rounded-pill d-flex align-items-center"
+                        onClick={() => removeTodo(todo.id)}
+                        title="Delete Todo"
+                      >
+                        <i className="bi bi-trash-fill me-1"></i> Delete
                       </button>
                     </td>
                   </tr>
