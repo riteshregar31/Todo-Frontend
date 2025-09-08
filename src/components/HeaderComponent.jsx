@@ -6,12 +6,22 @@ const HeaderComponent = () => {
     <header>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div className="container-fluid">
-          {/* Logo/Title on the leftmost side */}
-          <a href="http://localhost:3000" className="navbar-brand fw-bold">
-            Todo Management Application
-          </a>
+          {/* Left side: Logo and Todos */}
+          <div className="d-flex align-items-center">
+            <a href="http://localhost:3000" className="navbar-brand fw-bold me-3">
+              Todo Management Application
+            </a>
+            <NavLink
+              to="/todos"
+              className={({ isActive }) =>
+                `nav-link text-white ${isActive ? "active fw-bold" : ""}`
+              }
+            >
+              Todos
+            </NavLink>
+          </div>
 
-          {/* Navbar links aligned to the right */}
+          {/* Right side: Register and Login */}
           <div className="collapse navbar-collapse justify-content-end">
             <ul className="navbar-nav">
               <li className="nav-item mx-2">
@@ -26,12 +36,12 @@ const HeaderComponent = () => {
               </li>
               <li className="nav-item mx-2">
                 <NavLink
-                  to="/todos"
+                  to="/login"
                   className={({ isActive }) =>
                     `nav-link ${isActive ? "active fw-bold" : ""}`
                   }
                 >
-                  Todos
+                  Login
                 </NavLink>
               </li>
             </ul>
@@ -43,5 +53,3 @@ const HeaderComponent = () => {
 };
 
 export default HeaderComponent;
-
-
