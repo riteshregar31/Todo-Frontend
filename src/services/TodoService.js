@@ -1,6 +1,17 @@
 import axios from "axios"
+import { getToken } from "./AuthService";
 
 const BASE_REST_API_URL ='http://localhost:8080/api/todos'
+
+axios.interceptors.request.use(function (config) {
+  const token = getToken();
+  if (token) {
+    config.headers['Authorization'] = token;
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
 
 export const getAllTodos=()=> axios.get(BASE_REST_API_URL);
 
