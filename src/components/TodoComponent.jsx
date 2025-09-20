@@ -1,58 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { getTodo, saveTodo, updateTodo } from "../services/TodoService";
+import { getTodo, saveTodo, updateTodo} from "../services/TodoService";
 import { useNavigate, useParams } from "react-router-dom";
+import { isAdminUser } from "../services/AuthService";
+
 const TodoComponent = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [completed, setCompleted] = useState(false);
-  const navigate=useNavigate()
-const {id}=useParams()
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const isAdmin = isAdminUser();
+
+  useEffect(() => {
+    if (id) {
+      getTodo(id)
+        .then((res) => {
+          setTitle(res.data.title);
+          setDescription(res.data.description);
+          setCompleted(res.data.completed);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [id]);
+
+  
   const saveOrUpdateTodo = (e) => {
     e.preventDefault();
     const newTodo = { title, description, completed };
-    console.log("New Todo:", newTodo);
-    if(id){
-      updateTodo(id,newTodo).then((res)=>navigate('/todos')).catch(error=>console.error(error));
+
+    if (id) {
+      updateTodo(id, newTodo)
+        .then(() => navigate("/todos"))
+        .catch((err) => console.error(err));
+    } else {
+      saveTodo(newTodo)
+        .then(() => navigate("/todos"))
+        .catch((err) => console.error(err));
     }
-    else{
- saveTodo(newTodo).then((res)=>{
-    console.log(res.data)
-    navigate("/todos")
-   }).catch(error=>{
-    console.error(error)
-   })
   };
-    }
-  
 
-  function pageTitle(){
-    if(id){
-      return <h2>Update Todo</h2>
-    }
-    return <h2>Add Todo</h2>
-  }
+  const handleCompletedChange = (e) => {
+    const newValue = e.target.checked;
+    setCompleted(newValue);
 
-  useEffect(()=>{
-    if(id){
-      getTodo(id).then((res)=>{
-        console.log(res.data)
-        setTitle(res.data.title)
-        setDescription(res.data.description)
-        setCompleted(res.data.completed)
-      }).catch(error=>
-        console.error(error)
-      )
-    }
-  },[id])
+    if (!id) return; 
+
+    updateTodoCompletion(id, newValue)
+      .then(() => console.log("Todo completion updated"))
+      .catch((err) => console.error(err));
+  };
+
+  const pageTitle = () => (id ? <h2>Update Todo</h2> : <h2>Add Todo</h2>);
+
   return (
     <div className="container mt-5">
       <div className="card shadow-lg rounded-3">
-        <div className="card-header bg-dark text-white text-center">
-         {pageTitle()}
-        </div>
+        <div className="card-header bg-dark text-white text-center">{pageTitle()}</div>
         <div className="card-body">
           <form onSubmit={saveOrUpdateTodo}>
-           
             <div className="mb-3">
               <label className="form-label fw-bold">Title</label>
               <input
@@ -65,7 +71,6 @@ const {id}=useParams()
               />
             </div>
 
-          
             <div className="mb-3">
               <label className="form-label fw-bold">Description</label>
               <textarea
@@ -84,17 +89,16 @@ const {id}=useParams()
                 className="form-check-input"
                 id="completed"
                 checked={completed}
-                onChange={(e) => setCompleted(e.target.checked)}
+                onChange={handleCompletedChange}
               />
               <label className="form-check-label" htmlFor="completed">
                 Completed
               </label>
             </div>
 
-          
             <div className="d-grid">
               <button type="submit" className="btn btn-warning fw-bold">
-                <i className="bi bi-plus-circle me-2"></i> Add Todo
+                <i className="bi bi-plus-circle me-2"></i> {id ? "Update Todo" : "Add Todo"}
               </button>
             </div>
           </form>

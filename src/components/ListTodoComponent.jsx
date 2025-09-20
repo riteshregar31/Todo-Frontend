@@ -4,6 +4,7 @@ import {
   deleteTodo,
   getAllTodos,
   inCompleteTodo,
+  getMyTodos,
 } from "../services/TodoService";
 import { useNavigate } from "react-router-dom";
 import { isAdminUser } from "../services/AuthService";
@@ -11,7 +12,6 @@ import { isAdminUser } from "../services/AuthService";
 const ListTodoComponent = () => {
   const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
-
   const isAdmin = isAdminUser();
 
   useEffect(() => {
@@ -19,9 +19,15 @@ const ListTodoComponent = () => {
   }, []);
 
   const listTodos = () => {
-    getAllTodos()
-      .then((res) => setTodos(res.data))
-      .catch((error) => console.error(error));
+    if (isAdmin) {
+      getAllTodos()
+        .then((res) => setTodos(res.data))
+        .catch((err) => console.error(err));
+    } else {
+      getMyTodos()
+        .then((res) => setTodos(res.data))
+        .catch((err) => console.error(err));
+    }
   };
 
   const addNewTodo = () => navigate("/add-todo");
@@ -30,19 +36,16 @@ const ListTodoComponent = () => {
   const removeTodo = (id) => {
     deleteTodo(id)
       .then(() => listTodos())
-      .catch((error) => console.error(error));
+      .catch((err) => console.error(err));
   };
 
-  const markCompleteTodo = (id) => {
-    completeTodo(id)
+  const toggleCompletion = (todo) => {
+    const action = todo.completed ? inCompleteTodo : completeTodo;
+    action(todo.id)
       .then(() => listTodos())
-      .catch((error) => console.error(error));
+      .catch((err) => console.error(err));
   };
-  const markIncompleteTodo = (id) => {
-    inCompleteTodo(id)
-      .then(() => listTodos())
-      .catch((error) => console.error(error));
-  };
+
   return (
     <div className="container mt-5">
       <div className="card shadow-lg border-0 rounded-3">
@@ -79,6 +82,7 @@ const ListTodoComponent = () => {
                         <span className="badge bg-danger">Pending</span>
                       )}
                     </td>
+                 
                     <td>
                       {isAdmin && (
                         <button
@@ -89,6 +93,7 @@ const ListTodoComponent = () => {
                         </button>
                       )}
                     </td>
+                 
                     <td>
                       {isAdmin && (
                         <button
@@ -99,24 +104,25 @@ const ListTodoComponent = () => {
                         </button>
                       )}
                     </td>
+                  
                     <td>
-                      {todo.completed ? (
-                        <button
-                          className="btn btn-sm btn-warning rounded-pill d-flex align-items-center"
-                          onClick={() => markIncompleteTodo(todo.id)}
-                          title="Mark as Incomplete"
-                        >
-                          <i className="bi bi-x-lg me-1"></i> Incomplete
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm btn-success rounded-pill d-flex align-items-center"
-                          onClick={() => markCompleteTodo(todo.id)}
-                          title="Mark as Complete"
-                        >
-                          <i className="bi bi-check-lg me-1"></i> Complete
-                        </button>
-                      )}
+                      <button
+                        className={`btn btn-sm ${
+                          todo.completed ? "btn-warning" : "btn-success"
+                        } rounded-pill d-flex align-items-center`}
+                        onClick={() => toggleCompletion(todo)}
+                        title={todo.completed ? "Mark as Incomplete" : "Mark as Complete"}
+                      >
+                        {todo.completed ? (
+                          <>
+                            <i className="bi bi-x-lg me-1"></i> Incomplete
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-check-lg me-1"></i> Complete
+                          </>
+                        )}
+                      </button>
                     </td>
                   </tr>
                 ))

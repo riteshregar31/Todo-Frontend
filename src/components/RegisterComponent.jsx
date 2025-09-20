@@ -1,26 +1,29 @@
 import React, { useState } from "react";
 import { registerAPICall } from "../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 const RegisterComponent = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  function handleRegistrationForm(e) {
     e.preventDefault();
-  
-    console.log({ name, username, email, password });
-  };
-function handleRegistrationForm(e){
-  e.preventDefault()
-  const register={name,username,email,password}
-  registerAPICall(register).then((response)=>{
-    console.log(response.data)}).catch(error=>{
-      console.error(error)
-    })
-  console.log(register)
-}
+    const register = { name, username, email, password };
+
+    registerAPICall(register)
+      .then((response) => {
+        console.log(response.data);
+        navigate('/login');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    console.log(register);
+  }
 
   return (
     <div className="container mt-5">
@@ -29,11 +32,9 @@ function handleRegistrationForm(e){
           <div className="card shadow-sm">
             <div className="card-body">
               <h3 className="card-title mb-4 text-center">Register</h3>
-              <form onSubmit={handleRegister}>
+              <form onSubmit={handleRegistrationForm}>
                 <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Name
-                  </label>
+                  <label htmlFor="name" className="form-label">Name</label>
                   <input
                     type="text"
                     id="name"
@@ -46,9 +47,7 @@ function handleRegistrationForm(e){
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="username" className="form-label">
-                    Username
-                  </label>
+                  <label htmlFor="username" className="form-label">Username</label>
                   <input
                     type="text"
                     id="username"
@@ -61,9 +60,7 @@ function handleRegistrationForm(e){
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Email
-                  </label>
+                  <label htmlFor="email" className="form-label">Email</label>
                   <input
                     type="email"
                     id="email"
@@ -76,9 +73,7 @@ function handleRegistrationForm(e){
                 </div>
 
                 <div className="mb-4">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
+                  <label htmlFor="password" className="form-label">Password</label>
                   <input
                     type="password"
                     id="password"
@@ -91,9 +86,7 @@ function handleRegistrationForm(e){
                 </div>
 
                 <div className="d-grid">
-                  <button type="submit" className="btn btn-primary" onClick={(e)=>handleRegistrationForm(e)}>
-                    Register
-                  </button>
+                  <button type="submit" className="btn btn-primary">Register</button>
                 </div>
               </form>
             </div>
